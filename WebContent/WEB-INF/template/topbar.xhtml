@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:define name="head">
+<style type="text/css">
+ 
+</style>
+</ui:define>
+
+	<h:form>
+		<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+		
+		<p:growl id="messages" />
+
+		<p:menubar style="margin:0 10% 0; padding-top:8px;">
+
+			<p:menuitem outcome="/home.xhtml">
+				<h:graphicImage name="layout/images/logo_consultorio.png" height="28" />
+			</p:menuitem>
+
+			<p:submenu label="Adm" rendered="#{loginController.permiteAcesso('adm')}">
+				<p:menuitem value="Paciente" outcome="/paciente" icon="pi pi-globe"/>
+				<p:menuitem value="Medico" outcome="/medico" icon="pi pi-globe"/>
+				<p:menuitem value="Especialidade" outcome="/especialidademedica" icon="pi pi-globe"/>
+			</p:submenu>
+			
+			<p:submenu label="Medico" icon="pi pi-file" rendered="#{loginController.permiteAcesso('adm-medico')}">
+				<p:menuitem value="Exame(s)" url="#" />
+				<p:separator />
+				<p:menuitem value="Listar Pacientes" url="#" />
+				<p:separator />
+				<p:menuitem value="Diagnosticar" url="#" />
+				<p:separator />
+				<p:menuitem value="Prescrições" url="prescricoes.xhtml" />
+				<p:separator />
+				<p:menuitem value="Atestados" url="atestado.xhtml" />
+			</p:submenu>
+			
+			<p:submenu label="Paciente" icon="pi pi-file" rendered="#{loginController.permiteAcesso('adm-paciente')}" >
+				<p:menuitem value="Exame(s)" url="examePaciente.xhtml" />
+				<p:separator />
+				<p:menuitem value="Anamnese" url="anamnese.xhtml" />
+				<p:separator />
+				<p:menuitem value="Evolucão" url="evolucao.xhtml" />
+				<p:separator />
+				<p:menuitem value="Diagnóstico" url="#" />
+				<p:separator />
+				<p:menuitem value="Atestados" url="atestado.xhtml" />
+				<p:separator />
+				<p:menuitem value="Historico" url="#" />
+			</p:submenu>
+
+			<p:menuitem value="Agenda" url="agenda.xhtml" icon="pi pi-calendar-plus" />
+			
+			<p:menuitem value="Financeiro" url="#" icon="pi pi-dollar" />
+
+			<p:menuitem value="Relatório" url="#" icon="pi pi-chart-bar" />
+
+			<f:facet name="options">
+				<p:commandButton icon="pi pi-user" value="#{sessionScope.usuarioLogado.nome}"
+					rendered="#{loginController.isLogado()}"
+					action="#{loginController.paginaUser(sessionScope.usuarioLogado.id)}"
+					styleClass="topbar-logo" style="margin-right: 10px;" />
+				<p:commandButton icon="pi pi-power-off" value="Sair" action="#{loginController.logout()}"
+						rendered="#{loginController.isLogado()}" styleClass="topbar-logo" />
+			</f:facet>
+		</p:menubar>
+	</h:form>
+</ui:composition>

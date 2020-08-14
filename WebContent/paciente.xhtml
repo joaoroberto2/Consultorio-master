@@ -1,0 +1,190 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template/template.xhtml">
+	<ui:define name="head">
+		<style type="text/css">
+.ui-panelgrid.form-elements .ui-grc-2 {
+	padding-left: 60px;
+}
+
+@media ( max-width :1024px) {
+	.ui-panelgrid.form-elements .ui-grc-2 {
+		padding-left: 20px;
+	}
+}
+
+@media ( max-width :640px) {
+	.ui-panelgrid.form-elements .ui-grc-2 {
+		padding-left: 6px;
+	}
+}
+
+.dialogDemo label {
+	line-height: 2.1em;
+}
+</style>
+	</ui:define>
+	<ui:define name="content">
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+
+		<p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<p:graphicImage name="/images/loading.gif" />
+		</p:dialog>
+
+
+		<h:form>
+			<p:growl id="growl" globalOnly="false" />
+			<p:panel id="panel">
+				<f:facet name="header">
+					<div align="center">
+						<h1>Cadastro do Paciente</h1>
+					</div>
+				</f:facet>
+				<div class="ui-g ui-fluid  ">
+					<div class="ui-g-12">
+						<div class="card card-w-title  ">
+
+							<p:panelGrid columns="2"
+								columnClasses="ui-g-12 ui-md-1"
+								layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+
+								<p:commandLink value="Nome:"
+									actionListener="#{pacienteController.abrirPacienteListing}"
+									process="@this" update="@none">
+									
+									<p:ajax event="dialogReturn"
+										listener="#{pacienteController.obterPacienteListing}" 
+										update="@form"/>
+									
+								</p:commandLink>
+								<p:inputText id="itNome"
+									value="#{pacienteController.entity.nome}" required="true"
+									requiredMessage="Informe o nome." />
+
+								<p:outputLabel value="Email:" />
+								<p:inputText value="#{pacienteController.entity.email}" id="email" />
+								
+								<p:outputLabel value="Senha:" for="pwd" />
+								<p:password id="pwd" value="#{pacienteController.entity.senha}"
+									feedback="true" weakLabel="Senha fraca"
+									goodLabel="Senha razoavel" strongLabel="Senha forte"
+									promptLabel="Informe uma senha" match="pwd2" required="true"
+									requiredMessage="A senha é obrigatória"
+									validatorMessage="As senhas estão diferentes"
+									redisplay="true" />
+
+								<p:outputLabel value="Confirmar Senha:" for="pwd2" />
+								<p:password id="pwd2" feedback="false" required="true"
+								redisplay="true">
+								<p:ajax event="change" process="itNome email pwd pwd2" update="@form" />
+								</p:password>
+								
+								<p:outputLabel value="Data de Aniversário:" />
+								<p:calendar value="#{pacienteController.entity.dataNascimento}"
+									pattern="dd/MM/yyyy"
+									required="true"/>
+
+								<p:outputLabel value="CPF:" />
+								<p:inputText value="#{pacienteController.entity.cpf}" />
+
+								<p:outputLabel value="RG:" />
+								<p:inputText value="#{pacienteController.entity.rg}" />
+
+								<p:outputLabel value="Naturalidade:" />
+								<p:inputText value="#{pacienteController.entity.naturalidade}" />
+
+								<p:outputLabel value="Emissor:" />
+								<p:inputText value="#{pacienteController.entity.emissor}" />							
+							
+							</p:panelGrid>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="ui-button ui-state-hover   ">
+					<p:toolbar>
+						<f:facet name="left">
+							<p:commandButton value="Salvar" icon="pi pi-check"
+								process="@form" update="@form"
+								action="#{pacienteController.salvar}" />
+
+							<p:commandButton value="Limpar" process="@this" update="panel"
+								action="#{pacienteController.limpar}">
+								<p:ajax update="@form" resetValues="true" />
+							</p:commandButton>
+
+						</f:facet>
+
+						<f:facet name="right">
+							<p:commandButton value="Excluir" icon="pi pi-trash"
+								process="@form" update="panel"
+								rendered="#{loginController.permiteAcesso('Adm')}"
+								action="#{pacienteController.excluir}">
+								<p:confirm header="Confirmação" message="Confirma a exclusão?" />
+							</p:commandButton>
+						</f:facet>
+					</p:toolbar>
+				</div>
+			</p:panel>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" />
+			</p:confirmDialog>
+
+			<p:dialog header="Listagem de Pacientes" widgetVar="listagem"
+				height="300" width="90%" modal="true" resizable="true">
+				<p:outputLabel value="Nome: " />
+				<p:inputText id="itFiltro" value="#{pacienteController.filtro}" />
+				<p:commandButton value="Pesquisar"
+					actionListener="#{pacienteController.pesquisar}"
+					process="@this itFiltro" update="dtListagem" />
+				<br />
+				<div class="ui-datatable"></div>
+				<p:dataTable id="dtListagem" var="entity"
+					value="#{pacienteController.listaPaciente}">
+					<p:column headerText="Id">
+						<h:outputText value="#{entity.id}" />
+					</p:column>
+
+					<p:column headerText="Nome">
+						<p:commandLink value="#{entity.nome}"
+							actionListener="#{pacienteController.editar(entity.id)}"
+							process="@this" update="@form" resetValues="true" />
+					</p:column>
+
+					<p:column headerText="E-Mail">
+						<h:outputText value="#{entity.email}" />
+					</p:column>
+
+					<p:column headerText="Cpf">
+						<h:outputText value="#{entity.cpf}" />
+					</p:column>
+
+					<p:column headerText="Rg">
+						<h:outputText value="#{entity.rg}" />
+					</p:column>
+
+					<p:column headerText="Naturalidade">
+						<h:outputText value="#{entity.naturalidade}" />
+					</p:column>
+
+					<p:column headerText="Emissor">
+						<h:outputText value="#{entity.emissor}" />
+					</p:column>
+
+
+				</p:dataTable>
+			</p:dialog>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

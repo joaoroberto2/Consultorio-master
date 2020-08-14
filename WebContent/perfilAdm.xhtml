@@ -1,0 +1,260 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template/template.xhtml">
+	<ui:define name="head">
+		<style type="text/css">
+.ui-panelgrid.form-elements .ui-grc-2 {
+	padding-left: 60px;
+}
+
+@media ( max-width :1024px) {
+	.ui-panelgrid.form-elements .ui-grc-2 {
+		padding-left: 20px;
+	}
+}
+
+@media ( max-width :640px) {
+	.ui-panelgrid.form-elements .ui-grc-2 {
+		padding-left: 6px;
+	}
+}
+
+.dialogDemo label {
+	line-height: 2.1em;
+}
+</style>
+	</ui:define>
+	<ui:define name="content">
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+
+		<p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<p:graphicImage name="/images/loading.gif" />
+		</p:dialog>
+
+		<h:body id="body">
+			<h:form>
+
+				<p:growl id="msgs" showDetail="true"
+					skipDetailIfEqualsSummary="true" />
+
+				<h3 style="margin-top: 0">Ações</h3>
+				<p:accordionPanel>
+					<p:tab title="Editar Perfil">
+						<p:panel id="panel">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Nome:" />
+
+								<p:inputText id="itNome"
+									value="#{administradorController.entity.nome}" required="true"
+									requiredMessage="Informe o nome." />
+
+								<p:outputLabel value="Email:" />
+								<p:inputText value="#{administradorController.entity.email}"
+									id="email" />
+
+								<p:outputLabel value="Senha:" for="pwd" />
+								<p:password id="pwd" value="#{administradorController.entity.senha}"
+									feedback="true" weakLabel="Senha fraca"
+									goodLabel="Senha razoavel" strongLabel="Senha forte"
+									promptLabel="Informe uma senha" match="pwd2" required="true"
+									requiredMessage="A senha é obrigatória"
+									validatorMessage="As senhas estão diferentes" redisplay="true" />
+
+								<p:outputLabel value="Confirmar Senha:" for="pwd2" />
+								<p:password id="pwd2" feedback="false" required="true"
+									redisplay="true">
+									<p:ajax event="change" process="itNome email pwd pwd2"
+										update="@form" />
+								</p:password>
+
+								<p:outputLabel value="Data de Aniversário:" />
+								<p:calendar value="#{administradorController.entity.dataNascimento}"
+									pattern="dd/MM/yyyy" required="true" />
+
+								<p:outputLabel value="CPF:" />
+								<p:inputText value="#{administradorController.entity.cpf}" />
+
+								<p:outputLabel value="RG:" />
+								<p:inputText value="#{administradorController.entity.rg}" />
+
+								<p:outputLabel value="Naturalidade:" />
+								<p:inputText value="#{administradorController.entity.naturalidade}" />
+
+								<p:outputLabel value="Emissor:" />
+								<p:inputText value="#{administradorController.entity.emissor}" />
+							</h:panelGrid>
+
+							<p:toolbar>
+								<f:facet name="left">
+									<p:commandButton value="Salvar"
+										process="@form" update="@form"
+										disabled="#{administradorController.entity.id == null}"
+										action="#{administradorController.salvar}" />
+
+									<p:commandButton value="Limpar" process="@this" update="panel"
+										action="#{administradorController.limpar}">
+										<p:ajax update="@form" resetValues="true" />
+									</p:commandButton>
+
+									<p:commandButton value="Editar"
+									actionListener="#{administradorController.editar(sessionScope.usuarioLogado.id)}"
+									process="@this" update="@form" resetValues="true" 
+									disabled="#{administradorController.entity.id != null}"/>
+
+
+								</f:facet>
+							</p:toolbar>
+						</p:panel>
+					</p:tab>		
+				</p:accordionPanel>
+			</h:form>
+			
+			<h:form id="formEnd">
+				<p:growl id="msgs" showDetail="true"
+					skipDetailIfEqualsSummary="true" />
+				<p:accordionPanel>
+					<p:tab title="Endereço">
+						<p:panel id="panelEnd">
+						
+						<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Cep:" />
+								<p:inputText value="#{administradorController.endereco.cep}" required="true" 
+								rendered="true" id="cep" requiredMessage="cep necessário">
+								<f:ajax event="blur" execute="@this" render="formEnd"
+								listener="#{administradorController.pesquisarCep}" />
+								</p:inputText>
+
+								<p:outputLabel value="Cidade: " />
+								<p:inputText value="#{administradorController.endereco.localidade}" id="loc"
+								required="true" disabled="true"/>
+								
+								<p:outputLabel value="Estado: " />
+								<p:inputText value="#{administradorController.endereco.uf}" id="uf"
+								required="true" disabled="true"/>
+								
+								<p:outputLabel value="Bairro: " />
+								<p:inputText value="#{administradorController.endereco.bairro}" id="ba"
+								required="true" disabled="true"/>
+								
+								<p:outputLabel value="Logradouro: " />
+								<p:inputTextarea value="#{administradorController.endereco.logradouro}" id="log"
+								required="true" disabled="true"/>
+								
+								<p:outputLabel value="Complemento: " />
+								<p:inputText value="#{administradorController.endereco.complemento}" id="co"
+								required="true" requiredMessage="complemento necessário"/>	
+								
+						</h:panelGrid>
+
+							<p:toolbar>
+								<f:facet name="left">
+									<p:commandButton value="Salvar" process="formEnd" update="formEnd"
+										disabled="#{administradorController.botaoSalvarEnd()}"
+										action="#{administradorController.salvarEndereco(sessionScope.usuarioLogado.id)}" />
+
+									<p:commandButton value="Limpar" process="@this" update="panelEnd"
+										action="#{administradorController.limparEnd}">
+										<p:ajax update="formEnd" resetValues="true" />
+									</p:commandButton>
+
+									<p:commandButton value="Editar" id="editarTel"
+										action="#{administradorController.editarEndereco}"
+										disabled="#{administradorController.botaoEditarEnd()}"
+										process="@this" update="formEnd" resetValues="true">
+									</p:commandButton>
+										
+								</f:facet>
+							</p:toolbar>
+
+						</p:panel>
+					</p:tab>		
+				</p:accordionPanel>
+			</h:form>
+			
+			
+			<h:form id="formTel">
+				<p:growl id="msgs" showDetail="true"
+					skipDetailIfEqualsSummary="true" />
+				<p:accordionPanel>
+					<p:tab title="Gerenciar Telefones">
+						<p:panel id="panelTel">
+						
+						<h:panelGrid columns="2" cellpadding="10">
+						
+								<p:commandLink value="Listar Telefones " onclick="PF('listagemTelefone').show();">
+								</p:commandLink>
+								
+								<p:outputLabel id="itTel" value="---"
+									required="true" />
+
+								<p:outputLabel value="DDD:" />
+								<p:inputText value="#{administradorController.telefone.ddd}"
+								required="true"	id="ddd" />
+
+								<p:outputLabel value="Número:" />
+								<p:inputText value="#{administradorController.telefone.numero}" 
+								required="true" />
+								
+							</h:panelGrid>
+
+							<p:toolbar>
+								<f:facet name="left">
+									<p:commandButton value="Salvar" process="formTel" update="formTel"
+										action="#{administradorController.salvarTelefone(sessionScope.usuarioLogado.id)}" />
+
+									<p:commandButton value="Limpar" process="@this" update="panelTel"
+										action="#{administradorController.limparTel}">
+										<p:ajax update="formTel" resetValues="true" />
+									</p:commandButton>
+
+								</f:facet>
+							</p:toolbar>
+							
+							<p:dialog header="Listagem de Telefones" id="ListaTe"
+								widgetVar="listagemTelefone" height="300" width="90%"
+								modal="true" resizable="true">
+								<p:outputLabel value="Número: " />
+								<p:inputText id="itFiltro"
+									value="#{administradorController.filtro}" />
+								<p:commandButton value="Pesquisar"
+									actionListener="#{administradorController.pesquisarTelefone(sessionScope.usuarioLogado.id)}"
+									process="@this itFiltro" update="dtListagem" />
+								<br />
+								<div class="ui-datatable"></div>
+								<p:dataTable id="dtListagem" var="tel"
+									value="#{administradorController.listaTelefones}">
+									<p:column headerText="DDD">
+										<h:outputText value="#{tel.ddd}" />
+									</p:column>
+
+									<p:column headerText="Número">
+										<h:outputText value="#{tel.numero}" />
+									</p:column>
+
+									<p:column headerText="Ações">
+										<p:commandLink value="Editar"
+											actionListener="#{administradorController.editarTelefone(sessionScope.usuarioLogado.id, tel.id)}"
+											process="@this" update="formTel" resetValues="true" />
+										<p:commandLink value="Excluir" style="margin-left:5%;"
+											actionListener="#{administradorController.excluirTel(sessionScope.usuarioLogado.id, tel.id)}"
+											process="@this" />
+									</p:column>
+
+								</p:dataTable>
+							</p:dialog>
+
+						</p:panel>
+					</p:tab>		
+				</p:accordionPanel>
+			</h:form>
+		</h:body>
+
+	</ui:define>
+</ui:composition>

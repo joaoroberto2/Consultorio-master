@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template/template.xhtml">
+	<ui:define name="head">
+		<style type="text/css">
+.ui-panelgrid.form-elements .ui-grc-2 {
+	padding-left: 60px;
+}
+
+@media ( max-width :1024px) {
+	.ui-panelgrid.form-elements .ui-grc-2 {
+		padding-left: 20px;
+	}
+}
+
+@media ( max-width :640px) {
+	.ui-panelgrid.form-elements .ui-grc-2 {
+		padding-left: 6px;
+	}
+}
+
+.dialogDemo label {
+	line-height: 2.1em;
+}
+</style>
+	</ui:define>
+
+
+	<ui:define name="content">
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+
+		<p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<p:graphicImage name="/images/loading.gif" />
+		</p:dialog>
+
+		<h:body>
+			<h:form>
+			
+			<h3>Anamnese</h3>
+						
+				<h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+					<p:selectBooleanCheckbox value="#{anamnese.alergia}"
+						itemLabel="Alergias" />
+						
+						<p:selectBooleanCheckbox value="#{anamnese.asma}"
+						itemLabel="Asma" />
+
+					<p:selectBooleanCheckbox value="#{anamnese.diabete}"
+						itemLabel="Diabetes"/>
+						
+						<p:selectBooleanCheckbox value="#{anamnese.doencaCronica}"
+						itemLabel="Doença Crônica"/>
+						
+						<p:selectBooleanCheckbox value="#{anamnese.hipertesao}"
+						itemLabel="Hipertensão"/>
+						
+						<p:selectBooleanCheckbox value="#{anamnese.neoplasia}"
+						itemLabel="Neoplasia"/>
+						
+						<p:selectBooleanCheckbox value="#{anamnese.remedioUsoContinuo}"
+						itemLabel="Remédios de Uso Contínuo"/>
+						
+				</h:panelGrid>
+
+			</h:form>
+
+		</h:body>
+	</ui:define>
+</ui:composition>
